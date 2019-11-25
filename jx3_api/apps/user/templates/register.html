@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="../../../static/bootstrap-3.3.7/css/bootstrap.min.css">
+    <script src="../../../static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <style>
+        .phone {
+            margin-top: 45px;
+        }
+    </style>
+
+
+</head>
+<body>
+    <div class="row">
+    <div class="col-md-6 col-md-offset-3">
+        <div class="clearfix">
+            <h1 class="pull-left">注册</h1>
+            <a href="{% url 'register_phone' %}" class="pull-right phone">手机短信注册</a>
+            <hr>
+        </div>
+
+        <hr>
+        <form id="myForm">
+            {% for foo in form_obj %}
+                <div class="form-group">
+                    <label for="{{ foo.auto_id }}">{{ foo.label }}</label>
+                    {{ foo }}
+                    <span></span>
+                </div>
+            {% endfor %}
+
+        </form>
+        <div class="form-group">
+            <label for="myFile">头像(非必填)
+                <img src="/static/image/default.png" title="选择头像" width="80" id="head_img" style="margin-left: 20px">
+            </label>
+            <input type="file" id="myFile" name="my_file" style="display: none;">
+        </div>
+        <button class="btn btn-primary" id="id_button">注册</button>
+    </div>
+</div>
+
+
+
+
+</body>
+
+<script>
+    $("#myFile").change(function () {
+        let fileObj = this.files[0];
+        let fileReader = new FileReader();
+        fileReader.readAsDataURL(fileObj);
+        fileReader.onload = function () {
+            $("#head_img").attr("src", fileReader.result);
+        }});
+
+
+    $("#id_button").click(function () {
+        let formData = new FormData();
+        $.each($("#myForm").serializeArray(), function (index, obj) {
+            formData.append(obj.name, obj.value)
+        });
+        let file_obj = $("#myFile")[0].files[0];
+        formData.append("avatar_file", file_obj);
+
+        $.ajax({
+            url: '',
+            type: 'post',
+            data: formData,
+            processData: false,
+            contentType: false,
+
+            success: function (data) {
+                if (data.status_code == 1) {
+                    console.log('=========>', data.msg);
+                    alert("注册成功");
+                    location.href = "{% url 'home' %}";
+                }
+                else {
+                    $.each(data.msg, function (index, obj) {
+                        let id = "#id_" + index;
+                        $(id).next().html(obj[0]).parent().addClass("has-error")
+                    })
+                }
+            }
+        })
+    });
+
+    $("input").focus(function () {
+        $(this).next().html('').parent().removeClass("has-error")
+    });
+
+</script>
+
+
+</html>

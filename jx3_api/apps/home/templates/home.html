@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="../../../static/bootstrap-3.3.7/css/bootstrap.min.css">
+    <script src="../../../static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="../../../static/awesome/css/font-awesome.min.css">
+
+    <style>
+        .logo {
+            width: 30px
+        }
+
+        .navbar-brand {
+            padding-top: 10px;
+
+        }
+
+        .hotArticle {
+            border: 1px solid #cccccc;
+        }
+
+
+        .hotArticleList {
+            list-style: none;
+        }
+
+        .article {
+            list-style: none;
+            padding-left: 3px;
+        }
+
+        .avatar {
+            padding-right: 10px;
+        }
+
+        .desc {
+            margin: 10px 0;
+        }
+
+        hr {
+            margin: 10px 0;
+        }
+
+
+        .head_avatar {
+            margin-top: 8px;
+        }
+
+
+        .head_avatar img {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+        }
+
+    </style>
+
+
+</head>
+<body>
+{#导航条#}
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <img class="logo" src="../../../static/image/logo.png" alt="" title="首页">
+            </a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li class=""><a href="#">树洞 <span class="sr-only">(current)</span></a></li>
+                <li><a href="{% url 'playerview' %}">陪玩</a></li>
+            </ul>
+            <form class="navbar-form navbar-left" method="get" action="/search/" target="_blank">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="输入关键字" name="q">
+                </div>
+                <input type="submit" class="btn btn-default" value="搜索">
+            </form>
+            <ul class="nav navbar-nav navbar-right">
+                {% if request.user.is_authenticated %}
+                    <li>
+                        <div class="head_avatar">
+                            <img src="media/{{ request.user.avatar }}/" alt="。。。" class="">
+                            <a href="http://api.jx3blog.cn:8000/user/{{ request.user.username }}/site/{{ request.user.pk }}/">{{ request.user.jx3_name }}</a>
+                        </div>
+                    </li>
+                    <li><a href="http://api.jx3blog.cn:8000/user/backend/article/">后台管理</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                           aria-expanded="false">更多操作 <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="">个人中心</a></li>
+                            <li><a href="">个人资料</a></li>
+                            <li><a href="{% url 'setpassword' %}">修改密码</a></li>
+                            <li><a href="">修改头像</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="" class="logout">注销</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li><a href="{% url 'register' %}">注册</a></li>
+                    <li><a href="{% url 'login' %}" class="login">登陆</a></li>
+                {% endif %}
+            </ul>
+
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="body1">
+            <div class="col-md-3">
+                <h1>广告位广告位广告位广告位广告位广告位广告位</h1>
+            </div>
+            <div class="col-md-7">
+                <div class="hotArticle">
+                    <h5>【热门推荐】</h5>
+                    <ul class="hotArticleList">
+                        {% for hot_article in hot_article_list %}
+                            <li>
+                                <a href="user/{{ hot_article.blog.userinfo.username }}/article/{{ hot_article.pk }}/"><b>{{ hot_article.title }}</b></a>
+                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                <span class="pull-right">
+                                    <i class="fa fa-user-o" aria-hidden="true"></i>
+                                    <a href="user/{{ hot_article.blog.userinfo.username }}/site/{{ hot_article.blog.userinfo.pk }}/">{{ hot_article.blog.userinfo.jx3_name }}</a>
+                                    &nbsp;
+                                    <i class="fa fa-share" aria-hidden="true"></i>
+                                    阅读(<a
+                                        href="user/{{ hot_article.blog.userinfo.username }}/article/{{ hot_article.pk }}/">{{ hot_article.look_num }}</a>)
+                                    &nbsp;
+                                    <i class="fa fa-thumbs-o-up" aria-hidden="true"></i>
+                                    点赞(<a href="">{{ hot_article.down_num }}</a>)
+                                    &nbsp;
+                                    <i class="fa fa-calendar-minus-o" aria-hidden="true"></i>
+                                    {{ hot_article.create_time|date:'Y-m-d' }}
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                </span>
+                            </li>
+                        {% endfor %}
+
+                    </ul>
+
+                </div>
+                <br>
+                <div class="">
+                    <ul class="article">
+                        {% for article in article_list %}
+                            <li>
+                                <div>
+                                    <h4>
+                                        <a href="user/{{ article.blog.userinfo.username }}/article/{{ article.pk }}/">{{ article.title }}</a>
+                                    </h4>
+                                    <div class="clearfix desc">
+                                        <img src="media/{{ article.blog.userinfo.avatar }}" alt="" class="pull-left avatar" style="width: 100px;">
+                                        <span>{{ article.desc }}</span>
+                                    </div>
+                                    <div>
+                                        <span>
+                                        <a href="user/{{ article.blog.userinfo.username }}/site/{{ article.blog.userinfo.pk }}/">{{ article.blog.userinfo.jx3_name }}</a>
+                                        发布于
+                                        {{ article.create_time|date:'Y-m-d' }}
+                                        &nbsp;
+                                        <i class="fa fa-commenting" aria-hidden="true"></i>
+                                        评论(<a href="">{{ article.comment_num }}</a>)
+                                        &nbsp;
+                                        <i class="fa fa-share" aria-hidden="true"></i>
+                                        阅读(<a href="">{{ article.look_num }}</a>)
+                                    </span>
+                                    </div>
+
+                                </div>
+                                <hr>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <div class="text-center">
+                        {{ page_obj.page_html|safe }}
+                    </div>
+                </div>
+            </div>
+
+
+            {#            广告位#}
+            <div class="col-md-2">
+                广告位广告位广告位广告位广告位广告位广告位广告位广告位广告位广告位广告位广告位广告位广告位广告位广告位广告位
+                广告位广告位广告位广告位广告位广告位广告位广告位广告位广告位广告位广告位广告位广告位广告位广告位广告位广告位
+                广告位广告位广告位广告位广告位广告位广告位广告位广告位广告位广告位广告位广告位广告位广告位广告位广告位广告位
+                广告位广告位广告位广告位广告位广告位广告位广告位广告位广告位广告位广告位广告位广告位广告位广告位广告位广告位
+                广告位广
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let url = window.location.href;
+    $(".logout").click(function () {
+        $.ajax({
+            url: "{% url 'logout' %}",
+            method: 'get',
+            data: '',
+            success: function (data) {
+                console.log(111, window.location.href);
+                location.href = url
+            }
+        })
+    });
+
+</script>
+
+
+</body>
+
+
+</html>

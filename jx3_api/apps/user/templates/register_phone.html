@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="../../../static/bootstrap-3.3.7/css/bootstrap.min.css">
+    <script src="../../../static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <style>
+        .phone {
+            margin-top: 45px;
+        }
+    </style>
+
+
+</head>
+<body>
+<div class="row">
+    <div class="col-md-6 col-md-offset-3">
+        <div class="clearfix">
+            <h1 class="pull-left">手机短信注册</h1>
+            <a href="{% url 'register' %}" class="pull-right phone">账号注册</a>
+            <hr>
+        </div>
+
+        <hr>
+        <form id="myForm">
+            {% for foo in form_obj %}
+                <div class="form-group">
+                    <label for="{{ foo.auto_id }}">{{ foo.label }}</label>
+                    {{ foo }}
+                    <span></span>
+                </div>
+            {% endfor %}
+            <label for="id_code">手机验证码></label>
+            <input type="button" value="获取验证码" class="zdc">
+            <input type="text" class="form-control" id="id_code">
+            <span></span>
+
+        </form>
+        <br>
+        <div class="form-group">
+            <label for="myFile">头像(非必填)
+                <img src="/static/image/default.png" title="选择头像" width="80" id="head_img" style="margin-left: 20px">
+            </label>
+            <input type="file" id="myFile" name="my_file" style="display: none;">
+        </div>
+        <button class="btn btn-primary" id="id_button">注册</button>
+    </div>
+</div>
+
+
+</body>
+
+<script>
+    $("#myFile").change(function () {
+        let fileObj = this.files[0];
+        let fileReader = new FileReader();
+        fileReader.readAsDataURL(fileObj);
+        fileReader.onload = function () {
+            $("#head_img").attr("src", fileReader.result);
+        }
+    });
+
+    $("#id_button").click(function () {
+        let formData = new FormData();
+        $.each($("#myForm").serializeArray(), function (index, obj) {
+            formData.append(obj.name, obj.value)
+        });
+        let file_obj = $("#myFile")[0].files[0];
+        let code = $('#id_code').val();
+        formData.append("avatar_file", file_obj);
+        formData.append("web_code", code);
+
+        $.ajax({
+            url: '',
+            type: 'post',
+            data: formData,
+            processData: false,
+            contentType: false,
+
+            success: function (data) {
+                if (data.status_code == 1) {
+                    console.log('=========>', data.msg);
+                    alert("注册成功");
+                    location.href = "{% url 'home' %}";
+                }
+                else {
+                    $.each(data.msg, function (index, obj) {
+                        let id = "#id_" + index;
+                        $(id).next().html(obj[0]).parent().addClass("has-error")
+                    })
+                }
+            }
+        })
+    });
+
+
+    $("input").focus(function () {
+        $(this).next().html('').parent().removeClass("has-error")
+    });
+
+    let $zdc = $('.zdc');
+    let is_send = 0;
+    $zdc.click(function () {
+        console.log('进了click');
+        if (is_send === 0) {
+            $.ajax({
+                url: "http://api.jx3blog.cn:8000/user/sms/",
+                method: 'post',
+                data: {
+                    "phone": $('#id_phone').val(),
+                },
+                success: function (data) {
+                    is_send = 1;
+                    let sms_interval_time = 60;
+                    let codetime = setInterval(clock, 1000);
+                    function clock() {
+                        sms_interval_time -= 1;
+                        $zdc.val(`${sms_interval_time}秒后再次获取`);
+                        if (sms_interval_time <= 0) {
+                            clearInterval(codetime);
+                            $zdc.val('获取验证码');
+                            is_send = 0;
+                        }
+                    }
+                }
+            })
+        }
+    });
+
+</script>
+
+
+</html>

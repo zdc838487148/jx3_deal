@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="../../../static/bootstrap-3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../../static/awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../../../static/anniu/honeySwitch.css">
+    <script src="../../../static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script src="../../../static/anniu/honeySwitch.js"></script>
+
+
+    <style>
+        .logo {
+            width: 30px
+        }
+
+        .navbar-brand {
+            padding-top: 10px;
+
+        }
+
+
+        hr {
+            margin: 10px 0;
+        }
+
+
+        .head_avatar {
+            margin-top: 8px;
+        }
+
+
+        .head_avatar img {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+        }
+
+        #need_top {
+            margin-top: 5px;
+        }
+
+
+    </style>
+
+
+</head>
+<body>
+{#导航条#}
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <img class="logo" src="../../../static/image/logo.png" alt="" title="首页">
+            </a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li class=""><a href="#">树洞 <span class="sr-only">(current)</span></a></li>
+                <li><a href="{% url 'playerview' %}">陪玩</a></li>
+            </ul>
+            <form class="navbar-form navbar-left" method="get" action="/search/" target="_blank">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="输入关键字" name="q">
+                </div>
+                <input type="submit" class="btn btn-default" value="搜索">
+            </form>
+            <ul class="nav navbar-nav navbar-right">
+                {% if request.user.is_authenticated %}
+                    <li>
+                        <div class="head_avatar">
+                            <img src="{{ request.user.avatar }}" alt="" class="">
+                            <a href="http://api.jx3blog.cn:8000/user/{{ request.user.username }}/site/{{ request.user.pk }}/">{{ request.user.jx3_name }}</a>
+                        </div>
+                    </li>
+                    <li><a href="http://api.jx3blog.cn:8000/user/backend/article/">后台管理</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                           aria-expanded="false">更多操作 <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="">个人中心</a></li>
+                            <li><a href="">个人资料</a></li>
+                            <li><a href="">修改密码</a></li>
+                            <li><a href="">修改头像</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="" class="logout">注销</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li><a href="{% url 'register' %}">注册</a></li>
+                    <li><a href="{% url 'login' %}" class="login">登陆</a></li>
+                {% endif %}
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="body1">
+            <div class="col-md-2">
+                <a href="http://api.jx3blog.cn:8000/user/backend/userinfo/">个人资料设置</a>
+            </div>
+
+            <div class="col-md-10">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation">
+                        <a href="http://api.jx3blog.cn:8000/user/backend/article/" data-toggle="">文章管理</a>
+                    </li>
+                    <li role="presentation" class="active">
+                        <a href="http://api.jx3blog.cn:8000/user/backend/userinfo/" data-toggle="">个人资料</a>
+                    </li>
+                    <li role="presentation">
+                        <a href="http://api.jx3blog.cn:8000/user/backend/other/" data-toggle="">更多</a>
+                    </li>
+                </ul>
+                <div>
+                    <div class="flag">
+                        <br>
+                        <label for="id_age" id="need_top" class="pull-left">开启陪玩身份&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+                        <span class="is_keep_play">
+                            {% if request.user.playerinfo.is_keep_play %}
+                                <span class="switch-on" id="switch-on"></span>
+                            {% else %}
+                                <span class="switch-off" id="switch-off"></span>
+                            {% endif %}
+                        </span>
+
+                        <form action="" method="post" enctype="multipart/form-data">
+                            <input type="text" value="" style="display: none" id="is_keep_play" name="is_keep_play">
+                            <div class="player_info">
+                                <br>
+                                <label for="id_age">年龄 &nbsp;&nbsp;&nbsp;</label>
+                                <input type="text" id="id_age" name="age" value="{{ request.user.playerinfo.age }}"
+                                       class="form-group">
+
+
+                                <div class="form-group" id="id_sex">
+                                    <label for="">性别 &nbsp;&nbsp;&nbsp;</label>
+                                    <label for="">女 </label>
+                                    <input type="radio" name="sex" class="sex" value="0">
+                                    <label for="">男 </label>
+                                    <input type="radio" name="sex" class="sex" value="1">
+                                    <label for="">保密 </label>
+                                    <input type="radio" name="sex" class="sex" value="2">
+                                </div>
+                                <div class="form-group">
+                                    <label for="id_voice">声音音频 &nbsp;&nbsp;&nbsp;</label>
+                                    <input type="file" id="id_voice" name="voice">
+                                </div>
+                                <div>
+                                    <label for="id_price">计价标准 &nbsp;&nbsp;&nbsp;</label>
+                                    <input type="text" id="id_price" name="price"
+                                           value="{{ request.user.playerinfo.price }}">
+                                </div>
+                                <div>
+                                    <label for="id_work_time">接单时间段 &nbsp;&nbsp;&nbsp;</label>
+                                    <input type="text" id="id_work_time" name="work_time"
+                                           value="{{ request.user.playerinfo.work_time }}">
+                                </div>
+
+                                <div class="form-group" id="id_is_skill">
+                                    <label for="">技术型玩家 &nbsp;&nbsp;&nbsp;</label>
+                                    <label for="">是 </label>
+                                    <input type="radio" name="is_skill" class="is_skill" value='1'>
+                                    <label for="">否 </label>
+                                    <input type="radio" name="is_skill" class="is_skill" value='0'>
+                                </div>
+
+                                <div class="form-group" id="id_is_humor">
+                                    <label for="">幽默型玩家 &nbsp;&nbsp;&nbsp;</label>
+                                    <label for="">是 </label>
+                                    <input type="radio" name="is_humor" class="is_humor" value='1'>
+                                    <label for="">否 </label>
+                                    <input type="radio" name="is_humor" class="is_humor" value='0'>
+                                </div>
+
+                                <div>
+                                    <label for="id_accouter_num">装备分数 &nbsp;&nbsp;&nbsp;</label>
+                                    <input type="text" id="id_accouter_num" name="accouter_num"
+                                           value="{{ request.user.playerinfo.accouter_num }}">
+                                </div>
+                                <div>
+                                    <label for="id_body">职业体型 &nbsp;&nbsp;&nbsp;</label>
+                                    <input type="text" id="id_body" placeholder="如：苍云-成男" name="body"
+                                           value="{{ request.user.playerinfo.body }}">
+                                </div>
+
+                                <div>
+                                    <label for="id_addr">区服 &nbsp;&nbsp;&nbsp;</label>
+                                    <input type="text" id="id_addr" placeholder="如：电信一区-长安城" name="addr"
+                                           value="{{ request.user.playerinfo.addr }}">
+                                </div>
+
+                                <div>
+                                    <label for="id_contact_way">联系方式 &nbsp;&nbsp;&nbsp;</label>
+                                    <input type="text" id="id_contact_way"
+                                           placeholder="微信号/手机号/YY号(可留多个)&nbsp;&nbsp;&nbsp;如:YY号：54385438"
+                                           style="width: 600px" name="contact_way"
+                                           value="{{ request.user.playerinfo.contact_way }}">
+                                </div>
+
+
+                            </div>
+                            <br>
+                            <input type="submit" class="btn btn-success">
+                        </form>
+                        <hr>
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    let url = window.location.href;
+    $(".logout").click(function () {
+        $.ajax({
+            url: "{% url 'logout' %}",
+            method: 'get',
+            data: '',
+            success: function (data) {
+                console.log(111, window.location.href);
+                location.href = url
+            }
+        })
+    });
+
+    window.onload = function () {
+        if ($(".switch-on").hasClass('switch-on')) {
+            $('.player_info').css("display", 'block');
+            $('#is_keep_play').attr('value',1)
+        } else {
+            $('.player_info').css("display", 'none');
+            $('#is_keep_play').attr('value',0)
+        }
+     };
+
+
+    $("[class^=switch]").click(function () {
+        if ($(this).hasClass('switch-off')) {
+            console.log('开');
+            $('.player_info').css("display", 'block');
+            $('#is_keep_play').attr('value',1)
+        } else {
+            console.log('关');
+            $('.player_info').css("display", 'none');
+            $('#is_keep_play').attr('value',0)
+        }
+    });
+
+    {#$('.switch-on').ready(function () {#}
+    {#    $('.player_info').css("display", 'block')#}
+    {# });#}
+    {##}
+    {#$('.switch-off').ready(function () {#}
+    {#    alert(123);#}
+    {#    $('.player_info').css("display", 'none')#}
+    {# });#}
+
+
+    $(".sex[value='{{ request.user.playerinfo.sex }}']").attr('checked', 'checked');
+    $(".is_skill[value='{{ request.user.playerinfo.is_skill }}']").attr('checked', 'checked');
+    $(".is_humor[value='{{ request.user.playerinfo.is_humor }}']").attr('checked', 'checked');
+
+
+</script>
+
+
+</body>
+
+
+</html>

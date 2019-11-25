@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../../../static/jquery/jquery.min.js"></script>
+    <link rel="stylesheet" href="../../../static/bootstrap-3.3.7/css/bootstrap.min.css">
+    <script src="../../../static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="../../../static/awesome/css/font-awesome.min.css">
+
+    <style>
+        .logo {
+            width: 30px
+        }
+
+        .navbar-brand {
+            padding-top: 10px;
+
+        }
+
+        .hotArticle {
+            border: 1px solid #cccccc;
+        }
+
+
+        .hotArticleList {
+            list-style: none;
+        }
+
+        .article {
+            list-style: none;
+            padding-left: 3px;
+        }
+
+        .avatar {
+            padding-right: 10px;
+        }
+
+        .desc {
+            margin: 10px 0;
+        }
+
+        hr {
+            margin: 10px 0;
+        }
+
+
+        .head_avatar {
+            margin-top: 8px;
+        }
+
+
+        .head_avatar img {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+        }
+
+        #idContent {
+            width: 100%;
+            height: 450px;
+        }
+    </style>
+
+</head>
+<body>
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <img class="logo" src="../../../static/image/logo.png" alt="" title="首页">
+            </a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li class=""><a href="#">树洞 <span class="sr-only">(current)</span></a></li>
+                <li><a href="{% url 'playerview' %}">陪玩</a></li>
+            </ul>
+            <form class="navbar-form navbar-left" method="get" action="/search/" target="_blank">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="输入关键字" name="q">
+                </div>
+                <input type="submit" class="btn btn-default" value="搜索">
+            </form>
+            <ul class="nav navbar-nav navbar-right">
+                {% if request.user.is_authenticated %}
+                    <li>
+                        <div class="head_avatar">
+                            <img src="{{ request.user.avatar }}" alt="" class="">
+                            <a href="http://api.jx3blog.cn:8000/user/{{ request.user.username }}/site/{{ request.user.pk }}/">{{ request.user.jx3_name }}</a>
+                        </div>
+
+                    </li>
+                    <li><a href="http://api.jx3blog.cn:8000/user/backend/">后台管理</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                           aria-expanded="false">更多操作 <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="">个人中心</a></li>
+                            <li><a href="">个人资料</a></li>
+                            <li><a href="">修改密码</a></li>
+                            <li><a href="">修改头像</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="" class="logout">注销</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li><a href="{% url 'register' %}">注册</a></li>
+                    <li><a href="{% url 'login' %}" class="login">登陆</a></li>
+                {% endif %}
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+            <form action="" method="post" enctype="multipart/form-data">
+                <p>
+                    <label for="idTitle">标题</label>
+                    <input type="text" id="idTitle" name="title" value="{{ article_obj.title }}">
+                </p>
+
+                <div>
+                    <p><label for="idDesc">文章简介</label></p>
+                    <textarea id="idDesc" name="desc" style="width: 100%">{{ article_obj.desc }}</textarea>
+                </div>
+
+                <label for="idContent">内容</label>
+                <textarea name="content" id="idContent" cols="30" rows="10">{{ article_obj.content }}</textarea>
+
+                <br>
+                <label for="id_tag">标签</label>
+                <input type="text" name="tag" id="id_tag" style="width: 400px;" value="{{ tags }}">标签之间用“，”分隔
+
+                <p><label for="">分类（添加分类在 >后台管理-更多-添加分类中）</label>
+                    <select class="form-control" name="category" id="category">
+                        <optgroup label="分类">
+                            {% for category in category_list %}
+                                <option value="{{ category.name }}">{{ category.name }}</option>
+                            {% endfor %}
+                        </optgroup>
+                    </select>
+                <p>
+                    <input type="submit" id="idSubmit" class="btn btn-success">
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<script charset="utf-8" src="/static/kindeditor/kindeditor-all-min.js"></script>
+<script>
+    KindEditor.ready(function (K) {
+        window.editor = K.create("#idContent", {
+                resizeType: 0,
+                uploadJson: "/upload_img/",
+                extraFileUploadParams: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                }
+            }
+        )
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="../../../static/bootstrap-3.3.7/css/bootstrap.min.css">
+    <script src="../../../static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="../../../static/awesome/css/font-awesome.min.css">
+    <style>
+        .logo {
+            width: 30px
+        }
+
+        .navbar-brand {
+            padding-top: 10px;
+
+        }
+
+
+        hr {
+            margin: 10px 0;
+        }
+
+
+        .head_avatar {
+            margin-top: 8px;
+        }
+
+
+        .head_avatar img {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+        }
+
+        #need_top {
+            margin-top: 5px;
+        }
+
+        .head_img {
+            width: 150px;
+        }
+
+        .example {
+            width: 50px;
+        }
+
+
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <img class="logo" src="../../../static/image/logo.png" alt="" title="首页">
+            </a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li class=""><a href="#">树洞 <span class="sr-only">(current)</span></a></li>
+                <li><a href="{% url 'playerview' %}">陪玩</a></li>
+            </ul>
+            <form class="navbar-form navbar-left" method="get" action="/search/" target="_blank">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="输入关键字" name="q">
+                </div>
+                <input type="submit" class="btn btn-default" value="搜索">
+            </form>
+            <ul class="nav navbar-nav navbar-right">
+                {% if request.user.is_authenticated %}
+                    <li>
+                        <div class="head_avatar">
+                            <img src="media/{{ request.user.avatar }}" alt="" class="">
+                            <a href="http://api.jx3blog.cn:8000/user/{{ request.user.username }}/site/{{ request.user.pk }}/">{{ request.user.jx3_name }}</a>
+                        </div>
+                    </li>
+                    <li><a href="http://api.jx3blog.cn:8000/user/backend/article/">后台管理</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                           aria-expanded="false">更多操作 <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="">个人中心</a></li>
+                            <li><a href="">个人资料</a></li>
+                            <li><a href="">修改密码</a></li>
+                            <li><a href="">修改头像</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="" class="logout">注销</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li><a href="{% url 'register' %}">注册</a></li>
+                    <li><a href="{% url 'login' %}" class="login">登陆</a></li>
+                {% endif %}
+            </ul>
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2"></div>
+        <div class="col-md-2">
+            <img src="media/{{ player_obj.user.avatar }}" alt="" width=100%>
+        </div>
+        <div class="col-md-6">
+            <h2 class="">【 {{ player_obj.user.jx3_name }} 】
+                {% if player_obj.sex %}
+                    <B class="fa fa-mars" aria-hidden="true" style="color: deepskyblue;"></B>
+                {% else %}
+                    <B class="fa fa-venus" aria-hidden="true" style="color: hotpink;"></B>
+                {% endif %}
+            </h2>
+            <h3>区服：{{ player_obj.addr }}</h3>
+            <h3>职业体型：{{ player_obj.body }}</h3>
+            <h3>接单时间段：{{ player_obj.work_time }}</h3>
+            <h3>计费标准：{{ player_obj.price }}</h3>
+            <h3>接单数：{{ player_obj.work_num }}</h3>
+            <h3>
+                游戏风格：
+                {% if player_obj.is_skill %}
+                    操作犀利
+                {% else %}
+                    手残党
+                {% endif %}
+
+                {% if player_obj.is_humor %}
+                    / 相声选手
+                {% else %}
+                    / 不善言辞
+                {% endif %}
+            </h3>
+            <h3>
+                装备分：{{ player_obj.accouter_num }}
+            </h3>
+            <h3>
+                联系方式：{{ player_obj.contact_way }}
+            </h3>
+            <p>
+                <audio src="media/{{ player_obj.voice }}/" controls="controls"></audio>
+            </p>
+            <button href="#" class="btn btn-success" role="button" id="button">下单</button>
+
+        </div>
+    </div>
+
+    <hr>
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            {#            <div class="pull-right visible-lg-inline">#}
+            {#                <i class="fa fa-thumbs-o-up up_btn" aria-hidden="true">&nbsp;点赞(<span#}
+            {#                        id="id_up_num">{{ article_obj.up_num }}</span>)</i>#}
+            {#                <i class="fa fa-thumbs-o-down down_btn" aria-hidden="true">点踩(<span#}
+            {#                        id="id_down_num">{{ article_obj.down_num }}</span>)&nbsp;&nbsp;&nbsp;</i>#}
+            {#                <p class="msg text-center"></p>#}
+            {#            </div>#}
+            <ul class="list-group">
+                {% for comment in comment_list %}
+                    <li class="list-group-item">
+                        <div>
+                            <span>#{{ forloop.counter }}楼</span>
+                            <span>{{ comment.create_time|date:'Y-m-d' }}</span>
+                            <span><a
+                                    href="http://api.jx3blog.cn:8000/user/{{ comment.user.username }}/site/{{ comment.user.pk }}/">{{ comment.user.jx3_name }}</a></span>
+                            <span class="pull-right reply" comment_id="{{ comment.pk }}"
+                                  username="{{ comment.user.username }}"><a>回复</a>
+                                </span>
+                            <div>
+                                {% if comment.parent %}
+                                    <p>@&nbsp;{{ comment.parent.user.jx3_name }}</p>
+                                {% endif %}
+                                {{ comment.content }}
+                            </div>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+
+
+
+            {% if request.user.is_authenticated %}
+                <div>
+                    <p><span class="glyphicon glyphicon-comment"></span>发布评论</p>
+                    <p>昵称:<input type="text" id="tbCommentAuthor" class="author" disabled="disabled" size="50"
+                                 value="{{ request.user.jx3_name }}"></p>
+                    <p>评论内容:</p>
+                    <p>
+                        <textarea name="" id="id_comment" cols="60" rows="10"></textarea>
+                    </p>
+                    <p>
+                        <button class="btn btn-primary" id="id_submit">提交评论</button>
+                    </p>
+                </div>
+            {% else %}
+                <p><span class="glyphicon glyphicon-comment"></span>发布评论</p>
+                    <p>昵称:<input type="text" id="tbCommentAuthor" class="author" disabled="disabled" size="50"
+                                 value="{{ request.user.jx3_name }}"></p>
+                    <p>评论内容:</p>
+                    <p>
+                        <textarea name="" id="id_comment" cols="60" rows="10"></textarea>
+                    </p>
+                    <p>
+                        <button class="btn btn-warning" id="id_submit" disabled style="color: black;">
+                            <a href="{% url 'login' %}">登录</a>后才可以评论
+                        </button>
+                    </p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(".logout").click(function () {
+        $.ajax({
+            url: "{% url 'logout' %}",
+            method: 'get',
+            data: '',
+            success: function (data) {
+                console.log(111, window.location.href);
+                location.href = url
+            }
+        })
+    });
+
+
+    // 评论逻辑代码
+    // 定义一个全局的parentId变量名
+    let parentId = '';
+    $('#id_submit').click(function () {
+        // 获取textarea内容
+        let $content = $('#id_comment').val();
+        // 判断parentId是否有值才能确定是否切内容
+        if (parentId) {
+            let indexVal = $content.indexOf('\n') + 1;
+            $content = $content.slice(indexVal);
+            console.log($content)
+        }
+        $.ajax({
+            url: "{% url 'player_comment' %}",
+            type: 'post',
+            data: {
+                'player_id': '{{ player_obj.pk }}',
+                'content': $content,
+                'parent_id': parentId,
+            },
+            success: function (data) {
+                if (data.code == 1) {
+                    let userName = '{{ request.user.username }}';
+                    let content = $content;
+                    let tempStr = `
+                        <li class="list-group-item">
+                            <div>
+                                <span><a href="/${userName}/">${userName}:</a></span>
+                                <p>
+                                    ${content}
+                                </p>
+                            </div>
+                        </li>
+                        `;
+                    // 查找url标签 添加子元素
+                    $(".list-group").append(tempStr);
+                    // 将textarea框中的内容清空
+                    $('#id_comment').val('');
+                    // 将全局的parentId清空
+                    parentId = ''
+                }
+            }
+        })
+    });
+    // 回复按钮逻辑代码
+    $('.reply').click(function () {
+        // 1.把你想评论的那条评论的人名自动添加到textarea中(@+用户名)  如何获取评论人名？
+        let pUserName = $(this).attr('username');
+        let pCommentId = $(this).attr('comment_id');
+        // 2.自动换行
+        $('#id_comment').val('@' + pUserName + '\n');
+        //3.textarea自动聚焦
+        $('#id_comment').focus();
+        // 4.将全局的parentId赋值
+        parentId = pCommentId;
+    });
+
+    $("#button").click(function () {
+        $.ajax({
+            url:"{% url 'alipay' %}",
+            method:'post',
+            data:{
+                'subject': '{{ player_obj.user.jx3_name }}陪玩',
+                'money':'120'
+            },
+            success:function (data) {
+                location.href = data.pay_url
+            }
+        })
+    })
+</script>
+</body>
+</html>
